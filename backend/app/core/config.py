@@ -47,6 +47,19 @@ class Settings(BaseSettings):
     recency_boost: float = 0.05
     recency_half_life_days: int = 365
 
+    # Answer generation
+    llm_provider: Literal["gemini", "anthropic"] = "gemini"
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-3.5-flash"
+    gemini_thinking_level: str = "low"  # blank for models without thinking levels
+    anthropic_api_key: str = ""
+    anthropic_model: str = "claude-opus-5-5"
+    anthropic_effort: str = "low"
+    llm_max_output_tokens: int = 4096
+    # Below this best re-rank score, refuse without calling the LLM. Set between measured
+    # scores for answerable (0.81-0.88) and unanswerable (0.28-0.47) questions.
+    refusal_min_rerank_score: float = 0.55
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
