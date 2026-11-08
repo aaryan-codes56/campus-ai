@@ -1,0 +1,29 @@
+# Secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Source documents stay out of git
+data/raw/*
+!data/raw/.gitkeep
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
