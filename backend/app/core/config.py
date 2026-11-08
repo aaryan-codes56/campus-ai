@@ -36,6 +36,17 @@ class Settings(BaseSettings):
     voyage_rpm: int = 3
     voyage_tpm: int = 10_000
 
+    # Retrieval. Each is switchable so configurations can be compared in evals.
+    retrieval_mode: Literal["vector", "keyword", "hybrid"] = "hybrid"
+    rerank_enabled: bool = True
+    rerank_model: str = "rerank-3"
+    retrieval_candidates: int = 30
+    rerank_candidates: int = 20
+    retrieval_top_k: int = 6
+    rrf_k: int = 60
+    recency_boost: float = 0.05
+    recency_half_life_days: int = 365
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
