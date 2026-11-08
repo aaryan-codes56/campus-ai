@@ -25,3 +25,18 @@ npm run dev
 ```
 
 To run everything in containers instead: `docker compose --profile full up --build`.
+
+## Ingesting documents
+
+Put files in `data/raw/` (PDF, DOCX, HTML or TXT), describe them in `data/manifest.yaml`, set `VOYAGE_API_KEY` in `.env`, then:
+
+```bash
+cd backend
+uv run python -m app.ingestion.cli            # ingest new or changed files, then embed
+uv run python -m app.ingestion.cli --dry-run  # parse and chunk only, save nothing
+uv run python -m app.ingestion.cli --no-embed # store chunks without calling Voyage
+uv run python -m app.ingestion.cli --force    # re-process unchanged files
+uv run python -m app.ingestion.cli --prune    # remove documents no longer on disk
+```
+
+Re-running is safe: unchanged files are skipped, and an interrupted embedding run resumes where it stopped.

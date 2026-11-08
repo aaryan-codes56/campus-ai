@@ -6,8 +6,15 @@ requires-python = ">=3.12,<3.13"
 dependencies = [
     "alembic>=1.20.1",
     "asyncpg>=0.32.0",
+    "beautifulsoup4>=4.15.0",
     "fastapi>=0.162.2",
+    "httpx>=0.28.1",
+    "pgvector>=0.5.1",
     "pydantic-settings>=2.16.2",
+    "pymupdf>=2.1",
+    "python-docx>=1.2.0",
+    "python-multipart>=0.0.33",
+    "pyyaml>=6.0.3",
     "sqlalchemy[asyncio]>=2.1.8",
     "uvicorn[standard]>=0.54.0",
 ]
@@ -31,6 +38,11 @@ python_version = "3.12"
 strict = true
 files = ["app", "tests"]
 
+[[tool.mypy.overrides]]
+# PyMuPDF ships without complete type hints
+module = ["app.ingestion.parsers.pdf", "tests.helpers", "tests.ingestion.test_parsers"]
+disallow_untyped_calls = false
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
@@ -46,4 +58,5 @@ dev = [
     "pytest>=9.2.0",
     "pytest-asyncio>=1.4.1.post1",
     "ruff>=0.17.4",
+    "types-pyyaml>=6.0.12.20261103",
 ]

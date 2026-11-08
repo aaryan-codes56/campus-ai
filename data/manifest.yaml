@@ -1,0 +1,40 @@
+# Metadata for files in data/raw/, keyed by exact file name.
+# doc_type: notice | syllabus | calendar | policy | paper
+# date (optional, YYYY-MM-DD) overrides the date found in the document.
+# url (optional) links to the public source page.
+
+"Academic Calander.pdf":
+  title: "Academic Calendar 2026-27"
+  doc_type: calendar
+
+"Japan  Global Study Trek  2027 (2)_compressed.pdf":
+  title: "Japan Global Study Trek 2027"
+  doc_type: notice
+
+"NST Entrepreneurship Policy - Details (1).pdf":
+  title: "NST Entrepreneurship Policy"
+  doc_type: policy
+
+"POLICY FOR ACHIEVERS & CHANGEMAKERS.pdf":
+  title: "Policy for Achievers & Changemakers"
+  doc_type: policy
+
+"Parent Visting Guidelines - Version 1 (1).pdf":
+  title: "Parent / Guardian Visiting Guidelines"
+  doc_type: policy
+
+"RU_Leave of Absence (1).pdf":
+  title: "Leave of Absence Policy 2026"
+  doc_type: policy
+
+"Socio-Economically Disadvantaged Groups (SEDG) Cell.pdf":
+  title: "Socio-Economically Disadvantaged Groups (SEDG) Cell"
+  doc_type: notice
+
+"Student’s Grievance Redressal Committee (SGRC)..pdf":
+  title: "Student's Grievance Redressal Committee (SGRC)"
+  doc_type: notice
+
+"Venture Studio Policy.pdf":
+  title: "Venture Studio Policy"
+  doc_type: policy
