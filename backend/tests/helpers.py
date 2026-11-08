@@ -6,7 +6,7 @@ from pathlib import Path
 import pymupdf
 
 from app.db.models import EMBEDDING_DIMENSION
-from app.embeddings.base import EmbeddingError
+from app.embeddings.base import EmbeddingError, RerankError, RerankResult
 
 BODY = "helv"
 BOLD = "hebo"
@@ -51,3 +51,54 @@ class FakeEmbedder:
 
     async def embed_query(self, text: str) -> list[float]:
         return [0.1] * EMBEDDING_DIMENSION
+
+
+class FakeQueryEmbedder:
+    """Maps known questions to chosen vectors, so vector search results are predictable."""
+
+    def __init__(
+        self, vectors: dict[str, list[float]], model: str = "fake-model", fail: bool = False
+    ) -> None:
+        self._vectors = vectors
+        self._model = model
+        self.fail = fail
+        self.query_calls = 0
+
+    @property
+    def model(self) -> str:
+        return self._model
+
+    async def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        raise NotImplementedError
+
+    async def embed_query(self, text: str) -> list[float]:
+        self.query_calls += 1
+        if self.fail:
+            raise EmbeddingError("simulated failure")
+        return self._vectors[text]
+
+
+class FakeReranker:
+    """Ranks documents by whether they contain a preferred phrase."""
+
+    def __init__(self, prefer: str = "", fail: bool = False) -> None:
+        self.prefer = prefer
+        self.fail = fail
+        self.received: list[str] = []
+
+    async def rerank(self, query: str, documents: list[str]) -> list[RerankResult]:
+        if self.fail:
+            raise RerankError("simulated failure")
+        self.received = documents
+        results = [
+            RerankResult(index, 0.9 if self.prefer and self.prefer in text else 0.1)
+            for index, text in enumerate(documents)
+        ]
+        return sorted(results, key=lambda result: result.score, reverse=True)
+
+
+def axis_vector(axis: int) -> list[float]:
+    """A unit vector along one axis. Different axes are maximally dissimilar."""
+    vector = [0.0] * EMBEDDING_DIMENSION
+    vector[axis] = 1.0
+    return vector

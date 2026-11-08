@@ -209,6 +209,7 @@ async def ingest_file(
                 chunk_index=draft.index,
                 text=draft.text,
                 heading_path=draft.heading_path,
+                search_title=title,
                 page_start=draft.page_start,
                 page_end=draft.page_end,
                 token_estimate=draft.token_estimate,

@@ -40,3 +40,12 @@ uv run python -m app.ingestion.cli --prune    # remove documents no longer on di
 ```
 
 Re-running is safe: unchanged files are skipped, and an interrupted embedding run resumes where it stopped.
+
+## Searching from the terminal
+
+```bash
+cd backend
+uv run python -m app.retrieval.cli "When are the mid term exams?"
+uv run python -m app.retrieval.cli "When are the mid term exams?" --compare
+uv run python -m app.retrieval.cli "Leave rules" --mode keyword --doc-type policy
+```

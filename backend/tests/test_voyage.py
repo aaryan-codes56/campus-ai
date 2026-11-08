@@ -6,8 +6,8 @@ from typing import Any
 import httpx
 import pytest
 
-from app.embeddings.base import EmbeddingError
-from app.embeddings.voyage import VoyageEmbedder
+from app.embeddings.base import EmbeddingError, RerankError
+from app.embeddings.voyage import VoyageEmbedder, VoyageReranker
 
 
 def make_embedder(handler, sleeps: list[float] | None = None) -> VoyageEmbedder:  # type: ignore[no-untyped-def]
@@ -83,3 +83,49 @@ async def test_wrong_dimension_is_an_error() -> None:
     embedder = make_embedder(lambda request: httpx.Response(200, json=body))
     with pytest.raises(EmbeddingError):
         await embedder.embed_documents(["a"])
+
+
+def make_reranker(handler) -> VoyageReranker:  # type: ignore[no-untyped-def]
+    async def sleep(_: float) -> None:
+        return None
+
+    return VoyageReranker("key", "rerank-test", transport=httpx.MockTransport(handler), sleep=sleep)
+
+
+async def test_rerank_sorts_by_score_and_sends_documents() -> None:
+    seen: dict[str, Any] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.update(json.loads(request.content))
+        return httpx.Response(
+            200,
+            json={
+                "data": [
+                    {"index": 0, "relevance_score": 0.2},
+                    {"index": 1, "relevance_score": 0.9},
+                ]
+            },
+        )
+
+    results = await make_reranker(handler).rerank("q", ["a", "b"])
+    assert [result.index for result in results] == [1, 0]
+    assert seen["query"] == "q" and seen["documents"] == ["a", "b"]
+    assert seen["truncation"] is False
+
+
+async def test_rerank_with_no_documents_makes_no_call() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise AssertionError("should not be called")
+
+    assert await make_reranker(handler).rerank("q", []) == []
+
+
+async def test_rerank_rejects_unknown_index() -> None:
+    body = {"data": [{"index": 5, "relevance_score": 0.5}]}
+    with pytest.raises(RerankError):
+        await make_reranker(lambda request: httpx.Response(200, json=body)).rerank("q", ["a"])
+
+
+async def test_rerank_failure_raises_rerank_error() -> None:
+    with pytest.raises(RerankError):
+        await make_reranker(lambda request: httpx.Response(400, text="bad")).rerank("q", ["a"])
